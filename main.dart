@@ -14,5 +14,9 @@ void main() {
   List<Token> tokens = lexer.generateTokens();
   printTokens(tokens);
   var parser = new Parser(tokens);
-  parser.parse();
+  List<dynamic Function(Memory memory)> instructions = parser.parse();
+  for (dynamic Function(Memory memory) instruction in instructions) {
+    memory = instruction(memory);
+  }
+  print(memory.variables);
 }

@@ -6,6 +6,7 @@ class Lexer {
   late String char;
   List<Token> tokens = [];
   bool end = false;
+  String currentBracket = '';
 
   List<String> keywords = ['return'];
   List<String> declarations = ['var', 'const'];
@@ -13,11 +14,14 @@ class Lexer {
   List<String> ignore = [' ', '\n', '\t'];
   List<String> quotes = ['"'];
   List<String> operators = ['<', '<=', '=', '>=', '>', '+', '-', '*', '/'];
+  List<String> brackets = ['(', ')', '[', ']', '{', '}'];
+  List<int> balances = [];
   String symbols = '<=>+-*/'; // possible operator and assignment symbols
   String assignment = '<-';
 
   Lexer(this.code) {
     this.char = code[index];
+    for (int i = 0; i < brackets.length / 2; i++) balances.add(0);
   }
 
   void moveForward() {
@@ -26,6 +30,12 @@ class Lexer {
       this.char = this.code[this.index];
     } else {
       this.end = true;
+    }
+  }
+
+  void checkBalances() {
+    for (int balance in this.balances) {
+      if (balance < 0) throw new Exception('unexpected bracket');
     }
   }
 
@@ -79,6 +89,16 @@ class Lexer {
 
         continue;
       }
+      if (brackets.contains(this.char)) {
+        int i = this.brackets.indexOf(this.char);
+        this.balances[(i / 2).floor()] += i % 2 == 0 ? 1 : -1;
+        this.checkBalances();
+        this.currentBracket = this.char;
+        this.tokens.add(new Bracket(this.char));
+
+        this.moveForward();
+        continue;
+      }
       if (isSymbol(this.char)) {
         String symbols = this.getSymbols();
         if (symbols == this.assignment) {
@@ -122,6 +142,7 @@ class Lexer {
       }
       throw new Exception('invalid character');
     }
+    if (this.balances.reduce((int x, int y) => x + y) != 0) throw new Exception('unbalanced brackets');
     return this.tokens;
   }
 }
