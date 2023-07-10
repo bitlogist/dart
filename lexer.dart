@@ -10,15 +10,17 @@ class Lexer {
   List<String> keywords = ['return'];
   List<String> declarations = ['var', 'const'];
   List<String> conditionals = ['if', 'while'];
-  String symbols = '<=>+-';
+  List<String> ignore = [' ', '\n', '\t'];
+  List<String> quotes = ['"'];
+  List<String> operators = ['<', '<=', '=', '>=', '>', '+', '-', '*', '/'];
+  String symbols = '<=>+-*/'; // possible operator and assignment symbols
   String assignment = '<-';
-  List<String> ignore = [' ', '\n'];
 
   Lexer(this.code) {
     this.char = code[index];
   }
 
-  void moveCursor() {
+  void moveForward() {
     this.index++;
     if (index < this.code.length) {
       this.char = this.code[this.index];
@@ -43,7 +45,7 @@ class Lexer {
     String word = '';
     while (!this.end && isValidLetter(this.char)) {
       word += this.char;
-      this.moveCursor();
+      this.moveForward();
     }
     return word;
   }
@@ -52,7 +54,7 @@ class Lexer {
     String num = '';
     while (!this.end && isNumeric(this.char)) {
       num += this.char;
-      this.moveCursor();
+      this.moveForward();
     }
     return num;
   }
@@ -61,7 +63,7 @@ class Lexer {
     String symbols = '';
     while (!this.end && isSymbol(this.char)) {
       symbols += this.char;
-      this.moveCursor();
+      this.moveForward();
     }
     return symbols;
   }
@@ -75,29 +77,47 @@ class Lexer {
         else if (this.conditionals.contains(word)) this.tokens.add(new Conditional(word));
         else this.tokens.add(new Reference(word));
 
-        this.moveCursor();
         continue;
+      }
+      if (isSymbol(this.char)) {
+        String symbols = this.getSymbols();
+        if (symbols == this.assignment) {
+          this.tokens.add(new Assignment(symbols));
+
+          continue;
+        } else if (this.operators.contains(symbols)) {
+          this.tokens.add(new Operator(symbols));
+
+          continue;
+        }
+        // else isNumeric
       } 
       if (isNumeric(this.char) || this.char == '+' || this.char == '-') {
         String firstDigit = this.char; // could be digit or sign
-        this.moveCursor();
+        this.moveForward();
         String num = firstDigit + getNumber();
         if (num.contains('.')) this.tokens.add(new Double(num));
         else this.tokens.add(new Integer(num));
 
-        this.moveCursor();
         continue;
-      } 
-      if (isSymbol(this.char)) {
-        String symbols = this.getSymbols();
-        if (symbols == this.assignment) this.tokens.add(new Assignment(symbols));
-        else this.tokens.add(new Operator(symbols));
+      }
+      if (quotes.contains(this.char)) {
+        String begin = this.char;
+        this.moveForward();
+        String text = '';
+        while (!end && this.char != begin) {
+          text += this.char;
+          this.moveForward();
+        }
+        if (this.char == begin) {
+          this.tokens.add(new Text(text));
 
-        this.moveCursor();
-        continue;
-      } 
+          this.moveForward();
+          continue;
+        } else throw new Exception('missing closing quote');
+      }
       if (ignore.contains(this.char)) {
-        this.moveCursor();
+        this.moveForward();
         continue;
       }
       throw new Exception('invalid character');

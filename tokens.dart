@@ -24,10 +24,6 @@ class Operator extends Token {
   Operator(value) : super(value);
 }
 
-class Call extends Token {
-  Call(value) : super(value);
-}
-
 class Reference extends Token {
   Reference(value) : super(value);
 }

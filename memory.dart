@@ -1,8 +1,9 @@
 class Variable {
   String name;
   dynamic value;
+  bool constant;
 
-  Variable(this.name, this.value);
+  Variable(this.name, this.value, this.constant);
 }
 
 class Func {

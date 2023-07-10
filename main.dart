@@ -4,6 +4,7 @@ import 'dart:io';
 import 'memory.dart';
 import 'lexer.dart';
 import 'tokens.dart';
+import 'parser.dart';
 
 void main() {
   print('Dart Interpreter');
@@ -12,4 +13,6 @@ void main() {
   var lexer = new Lexer(input);
   List<Token> tokens = lexer.generateTokens();
   printTokens(tokens);
+  var parser = new Parser(tokens);
+  parser.parse();
 }
