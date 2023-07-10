@@ -30,18 +30,19 @@ class Parser {
     if (names.length == 0) throw new Exception('blank declaration');
     if (!(this.token is Assignment)) throw new Exception('expected assignment');
     this.moveForward();
+    dynamic v = this.token.value; // necessary to create unique references
     if (this.token is Reference) {
       // todo: check for punctuation
       this.instructions.add((Memory memory) {
         for (var name in names) {
-          memory.variables[name] = new Variable(name, memory.variables[this.token.value], writable);
+          memory.variables[name] = new Variable(name, memory.variables[v]?.value, writable);
         }
         return memory;
       });
     } else if (this.token is Integer) {
       this.instructions.add((Memory memory) {
         for (var name in names) {
-          memory.variables[name] = new Variable(name, int.parse(this.token.value), writable);
+          memory.variables[name] = new Variable(name, int.parse(v), writable);
         }
         return memory;
       });

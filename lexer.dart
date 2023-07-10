@@ -142,7 +142,9 @@ class Lexer {
       }
       throw new Exception('invalid character');
     }
-    if (this.balances.reduce((int x, int y) => x + y) != 0) throw new Exception('unbalanced brackets');
+    this.balances.forEach((element) {
+      if (element != 0) throw new Exception('expected closing brackets');
+    });
     return this.tokens;
   }
 }
