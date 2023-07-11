@@ -1,2 +1,4 @@
 var x y <- 0
-var z <- x
+const z <- x
+y <- "Hello, world!"
+print(y)

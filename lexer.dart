@@ -18,6 +18,7 @@ class Lexer {
   List<int> balances = [];
   String symbols = '<=>+-*/'; // possible operator and assignment symbols
   String assignment = '<-';
+  String separator = ',';
 
   Lexer(this.code) {
     this.char = code[index];
@@ -95,6 +96,12 @@ class Lexer {
         this.checkBalances();
         this.currentBracket = this.char;
         this.tokens.add(new Bracket(this.char));
+
+        this.moveForward();
+        continue;
+      }
+      if (this.char == this.separator) {
+        this.tokens.add(new Sep(this.char));
 
         this.moveForward();
         continue;

@@ -44,6 +44,10 @@ class Bracket extends Token {
   Bracket(value) : super(value);
 }
 
+class Sep extends Token {
+  Sep(value) : super(value);
+}
+
 class End extends Token {
   End(value) : super(value);
 }

@@ -7,18 +7,18 @@ import 'lexer.dart';
 import 'tokens.dart';
 import 'parser.dart';
 
-String exit = '~';
-
 void main(List<String> args) {
+  var memory = new Memory({}, {});
+  addFunc(memory, 'print', [{ 'message': String }], (List x) {
+    print(x[0]);
+    return x[0];
+  });
   if (args.length == 1) {
     File(args[0]).readAsString().then((String code) {
-      print(code);
-      var memory = new Memory({}, {});
       var lexer = new Lexer(code);
       List<Token> tokens = lexer.generateTokens();
       var parser = new Parser(tokens);
       List<dynamic Function(Memory memory)> instructions = parser.parse();
-      print('RUNTIME');
       for (dynamic Function(Memory memory) instruction in instructions) {
         instruction(memory);
         List<String> entries = [];
@@ -29,8 +29,7 @@ void main(List<String> args) {
       }
     });
   } else {
-    print('Dart Interpreter');
-    var memory = new Memory({}, {});
+    print('Chad Interpreter');
     String input = '';
     while (true) {
       input = stdin.readLineSync(encoding: utf8) ?? '';
@@ -41,7 +40,7 @@ void main(List<String> args) {
       var parser = new Parser(tokens);
       List<dynamic Function(Memory memory)> instructions = parser.parse();
       for (dynamic Function(Memory memory) instruction in instructions) {
-        memory = instruction(memory);
+        instruction(memory);
       }
     }
     print(memory.variables);

@@ -13,3 +13,14 @@ The only thing you can really do in Chad is declare variables for now.
 var variable <- 0 // mutable
 const constant <- "text" // immutable
 ```
+
+### Output
+
+A `print` function was added for console output. Standard library functions are added to the memory before runtime.
+
+```dart
+var x y <- 0
+const z <- x
+y <- "Hello, world!"
+print(y)
+```
