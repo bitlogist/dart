@@ -155,6 +155,7 @@ class Parser {
               for (List<Token> expression in group) {
                 args.add(this.simplify(expression, memory));
               }
+              if (args.length != func.arguments.length) throw new Exception('expected ${func.arguments.length} arguments but received ${args.length}');
               dynamic returnValue = func.body(args);
             });
           }
