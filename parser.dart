@@ -152,8 +152,12 @@ class Parser {
               Func func = memory.funcs[name] ?? new Func('', [], (x) {});
               if (func.name.isEmpty) throw new Exception('calling of nonexistent function');
               List args = [];
-              for (List<Token> expression in group) {
-                args.add(this.simplify(expression, memory));
+              for (int i = 0; i < group.length; i++) {
+                dynamic item = this.simplify(group[i], memory);
+                dynamic argType = func.arguments[i].values.first;
+                dynamic runtimeType = item.runtimeType;
+                if (runtimeType != argType) throw new Exception('expected ${argType} for positional argument ${i + 1}');
+                args.add(item);
               }
               if (args.length != func.arguments.length) throw new Exception('expected ${func.arguments.length} arguments but received ${args.length}');
               dynamic returnValue = func.body(args);
